@@ -2,10 +2,10 @@
     "name": "fb-autobot",
     "version": "3.0.5",
     "description": "FB Autobot is a free tool that helps you automate Facebook tasks without coding skills. Build your own bot today!",
-    "main": "index.js",
+    "main": "chatbox.js",
     "scripts": {
-        "start": "node index.js",
-        "start:compiled": "node index.js"
+        "start": "node chatbox.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [
         "fb-bot",

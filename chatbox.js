@@ -11,7 +11,6 @@ const cors = require('cors');
 require('dotenv').config();
 
 const {
-    workers,
     logger,
     fonts,
     OnChat,
@@ -56,12 +55,12 @@ const isBlocked = (ip) => blockedIPs.has(ip);
 
 const startServer = async (stealth_port) => {
     try {
-        const hajime = await workers();
+       // const hajime = await workers();
 
         // Reload environment variables
         require('dotenv').config();
 
-        let PORT = stealth_port || process.env.PORT || kokoro_config.port || hajime?.host?.port || 10000;
+        let PORT = stealth_port || process.env.PORT || kokoro_config.port || 3000;
         const lastTimestamp = process.env.PORT_TIMESTAMP ? parseInt(process.env.PORT_TIMESTAMP) : 0;
         const currentTime = Date.now();
 
@@ -69,14 +68,12 @@ const startServer = async (stealth_port) => {
         if (lastTimestamp && currentTime - lastTimestamp > 60 * 60 * 1000) {
             console.log("More than 1 hour passed, removing stored port.");
             removeEnvPort();
-            PORT = kokoro_config.port || hajime?.host?.port || 10000; // Fallback to default
+            PORT = kokoro_config.port || 3000; // Fallback to default
         }
 
         const serverUrl =
             (kokoro_config.weblink && kokoro_config.port ? `${kokoro_config.weblink}:${kokoro_config.port}` : null) ||
             kokoro_config.weblink ||
-            (hajime?.host?.server?.[0] && hajime?.host?.port ? `${hajime.host.server[0]}:${hajime.host.port}` : null) ||
-            hajime?.host?.server?.[0] ||
             `http://localhost:${PORT}`;
 
         server = app.listen(PORT, () => {
@@ -159,7 +156,7 @@ const limiter = rateLimit({
     legacyHeaders: false,
     handler: (req, res) => {
         const clientIP = req.headers["cf-connecting-ip"] || req.ip;
-        
+
         if (!TRUSTED_IPS.includes(clientIP)) {
             console.log(`DDoS detected from ${clientIP}! Blocking IP and switching ports...`);
             blockedIPs.set(clientIP, Date.now());
@@ -314,10 +311,10 @@ routes.forEach(route => {
 
     const scriptsPath = path.join(__dirname, 'script', 'restapi');
 
-    if (!fs.existsSync(scriptsPath)) {
+   /* if (!fs.existsSync(scriptsPath)) {
       console.error(`Directory not found: ${scriptsPath}`);
       return;
-    }
+    }*/
 
     fs.readdirSync(scriptsPath).forEach(file => {
         const script = require(path.join(scriptsPath, file));
@@ -487,7 +484,7 @@ function changePort() {
 startServer();
 
 async function accountLogin(state, prefix = "", admin = [], email, password) {
-    const global = await workers();
+   // const global = await workers();
 
     return new Promise((resolve, reject) => {
         const loginOptions = state
@@ -690,8 +687,8 @@ if (event && event.senderID && event?.body) {
                     } else {
                         history = {};
                     }
-                    
-                    
+
+
                    let isPrefix =
                     event?.body &&
                     aliases(
@@ -941,7 +938,7 @@ if (event && event?.body && aliases(command)?.name) {
                                                         ),
                                                         1
                                                     )): null;
-                                                    
+
                                                 await (
                                                     aliases(command?.toLowerCase())?.run ||
                                                     (() => {})
@@ -989,7 +986,7 @@ if (event && event?.body && aliases(command)?.name) {
                                                         font: fonts,
                                                         global,
                                                         admin,
-                                            
+
                                                         prefix,
 
                                                         Utils,
@@ -1118,8 +1115,8 @@ setInterval(executeTask, 60000);
     };
 
     const ERROR = error?.message || error?.error;
-    
-            
+
+
     if (ERROR === "Connection refused: Server unavailable") {
         logger.yellow(`Can't log in user ${userId}: checkpoint status, please check your account make sure appstate still valid!`);
         Utils.account.delete(userId);

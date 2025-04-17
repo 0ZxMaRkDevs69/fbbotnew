@@ -1,6 +1,6 @@
-const {
+/*const {
     workers
-} = require("./workers");
+} = require("./workers");*/
 const {
     logger
 } = require("./logger");
@@ -30,7 +30,6 @@ const {
 } = require("./download");
 
 module.exports = {
-    workers,
     logger,
     download,
     fonts,
